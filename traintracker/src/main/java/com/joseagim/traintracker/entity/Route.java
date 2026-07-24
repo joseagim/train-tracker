@@ -22,7 +22,7 @@ public class Route {
     private Long id;
 
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "route")
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("stopOrder")
     private List<RouteStation> routeStations = new ArrayList<>();
 
