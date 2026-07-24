@@ -36,9 +36,9 @@ public class TrainController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TrainResponseDto> edit(
+    public ResponseEntity<TrainResponseDto> update(
             @PathVariable Long id, @Valid @RequestBody TrainRequestDto trainRequest) {
-        return ResponseEntity.ok(trainService.edit(id, trainRequest));
+        return ResponseEntity.ok(trainService.update(id, trainRequest));
     }
 
     @DeleteMapping("/{id}")

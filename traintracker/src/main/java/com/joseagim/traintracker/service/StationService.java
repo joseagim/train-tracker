@@ -45,7 +45,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public StationResponseDto edit(Long id, StationRequestDto stationRequest) {
+    public StationResponseDto update(Long id, StationRequestDto stationRequest) {
 
         Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Station not found with id: " + id));

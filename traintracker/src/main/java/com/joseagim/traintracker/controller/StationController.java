@@ -36,8 +36,8 @@ public class StationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StationResponseDto> edit(@PathVariable Long id, @Valid @RequestBody StationRequestDto stationRequest) {
-        return ResponseEntity.ok(stationService.edit(id, stationRequest));
+    public ResponseEntity<StationResponseDto> update(@PathVariable Long id, @Valid @RequestBody StationRequestDto stationRequest) {
+        return ResponseEntity.ok(stationService.update(id, stationRequest));
     }
 
     @DeleteMapping("/{id}")

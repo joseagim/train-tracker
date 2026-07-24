@@ -50,7 +50,7 @@ public class TrainService {
 
     }
 
-    public TrainResponseDto edit(Long id, TrainRequestDto trainRequest) {
+    public TrainResponseDto update(Long id, TrainRequestDto trainRequest) {
 
         Train train = trainRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Train not found with id: " + id));
