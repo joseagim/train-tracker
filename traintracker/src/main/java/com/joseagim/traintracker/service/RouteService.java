@@ -3,8 +3,6 @@ package com.joseagim.traintracker.service;
 import com.joseagim.traintracker.dto.request.RouteRequestDto;
 import com.joseagim.traintracker.dto.request.RouteStationRequestDto;
 import com.joseagim.traintracker.dto.response.RouteResponseDto;
-import com.joseagim.traintracker.dto.response.RouteStationResponseDto;
-import com.joseagim.traintracker.dto.response.StationResponseDto;
 import com.joseagim.traintracker.entity.Route;
 import com.joseagim.traintracker.entity.RouteStation;
 import com.joseagim.traintracker.entity.Station;
@@ -13,7 +11,6 @@ import com.joseagim.traintracker.repository.RouteRepository;
 import com.joseagim.traintracker.repository.StationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +34,7 @@ public class RouteService {
 
         Route saved = routeRepository.save(route);
 
-        return new RouteResponseDto(saved.getId(), saved.getName(), getRouteStationsResponse(saved));
+        return RouteResponseDto.from(saved);
 
     }
 
@@ -46,7 +43,7 @@ public class RouteService {
         Route route = routeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Route not found with id: " + id));
 
-        return new RouteResponseDto(route.getId(), route.getName(), getRouteStationsResponse(route));
+        return RouteResponseDto.from(route);
 
     }
 
@@ -55,7 +52,7 @@ public class RouteService {
         List<Route> routes = routeRepository.findAll();
 
         return routes.stream()
-                .map(route -> new RouteResponseDto(route.getId(), route.getName(), getRouteStationsResponse(route)))
+                .map(RouteResponseDto::from)
                 .collect(Collectors.toList());
 
     }
@@ -71,7 +68,7 @@ public class RouteService {
 
         Route saved = routeRepository.save(route);
 
-        return new RouteResponseDto(saved.getId(), saved.getName(), getRouteStationsResponse(saved));
+        return RouteResponseDto.from(saved);
 
     }
 
@@ -95,22 +92,6 @@ public class RouteService {
             routeStation.setMinutesFromStart(routeStationRequest.minutesFromStart());
             route.addRouteStation(routeStation);
         }
-    }
-
-    private static List<RouteStationResponseDto> getRouteStationsResponse(Route route) {
-        List<RouteStationResponseDto> routeStationsResponse = new ArrayList<>();
-        for (RouteStation savedRs : route.getRouteStations()) {
-            routeStationsResponse.add(new RouteStationResponseDto(
-                    savedRs.getId(),
-                    new StationResponseDto(
-                            savedRs.getStation().getId(),
-                            savedRs.getStation().getName(),
-                            savedRs.getStation().getCity()),
-                    savedRs.getStopOrder(),
-                    savedRs.getMinutesFromStart()
-            ));
-        }
-        return routeStationsResponse;
     }
 
 }

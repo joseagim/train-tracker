@@ -27,7 +27,7 @@ public class StationService {
 
         Station saved = stationRepository.save(station);
 
-        return new StationResponseDto(saved.getId(), saved.getName(), saved.getCity());
+        return StationResponseDto.from(saved);
     }
 
     public StationResponseDto findById(Long id) {
@@ -35,13 +35,13 @@ public class StationService {
         Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Station not found with id: " + id));
 
-        return new StationResponseDto(station.getId(), station.getName(), station.getCity());
+        return StationResponseDto.from(station);
     }
 
     public List<StationResponseDto> findAll() {
 
         return stationRepository.findAll().stream()
-                .map(station -> new StationResponseDto(station.getId(), station.getName(), station.getCity()))
+                .map(StationResponseDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -55,7 +55,7 @@ public class StationService {
 
         Station saved = stationRepository.save(station);
 
-        return new StationResponseDto(saved.getId(), saved.getName(), saved.getCity());
+        return StationResponseDto.from(saved);
 
     }
 

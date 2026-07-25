@@ -28,7 +28,7 @@ public class TrainService {
 
         Train saved = trainRepository.save(train);
 
-        return new TrainResponseDto(saved.getId(), saved.getType(), saved.getBogeys(), saved.getSeatsByBogey());
+        return TrainResponseDto.from(saved);
 
     }
 
@@ -37,15 +37,14 @@ public class TrainService {
         Train train = trainRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Train not found with id: " + id));
 
-        return new TrainResponseDto(train.getId(), train.getType(), train.getBogeys(), train.getSeatsByBogey());
+        return TrainResponseDto.from(train);
 
     }
 
     public List<TrainResponseDto> findAll() {
 
         return trainRepository.findAll().stream()
-                .map(train ->
-                        new TrainResponseDto(train.getId(), train.getType(), train.getBogeys(), train.getSeatsByBogey()))
+                .map(TrainResponseDto::from)
                 .collect(Collectors.toList());
 
     }
@@ -61,7 +60,7 @@ public class TrainService {
 
         Train saved = trainRepository.save(train);
 
-        return new TrainResponseDto(saved.getId(), saved.getType(), saved.getBogeys(), saved.getSeatsByBogey());
+        return TrainResponseDto.from(saved);
 
     }
 
