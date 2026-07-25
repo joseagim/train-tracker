@@ -43,7 +43,7 @@ public class Trip {
     private TripStatus status = TripStatus.ON_TIME;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String seats;
 
     @Version
