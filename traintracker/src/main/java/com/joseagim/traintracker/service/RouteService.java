@@ -9,10 +9,9 @@ import com.joseagim.traintracker.entity.Station;
 import com.joseagim.traintracker.exception.ResourceNotFoundException;
 import com.joseagim.traintracker.repository.RouteRepository;
 import com.joseagim.traintracker.repository.StationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RouteService {
@@ -47,14 +46,8 @@ public class RouteService {
 
     }
 
-    public List<RouteResponseDto> findAll() {
-
-        List<Route> routes = routeRepository.findAll();
-
-        return routes.stream()
-                .map(RouteResponseDto::from)
-                .collect(Collectors.toList());
-
+    public Page<RouteResponseDto> findAll(Pageable pageable) {
+        return routeRepository.findAll(pageable).map(RouteResponseDto::from);
     }
 
     public RouteResponseDto update(Long id, RouteRequestDto routeRequest) {

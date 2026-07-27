@@ -4,11 +4,12 @@ import com.joseagim.traintracker.dto.request.StationRequestDto;
 import com.joseagim.traintracker.dto.response.StationResponseDto;
 import com.joseagim.traintracker.service.StationService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/stations")
@@ -26,8 +27,8 @@ public class StationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponseDto>> findAll() {
-        return ResponseEntity.ok(stationService.findAll());
+    public ResponseEntity<Page<StationResponseDto>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(stationService.findAll(pageable));
     }
 
     @GetMapping("/{id}")

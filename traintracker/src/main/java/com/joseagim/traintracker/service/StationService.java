@@ -5,10 +5,9 @@ import com.joseagim.traintracker.dto.response.StationResponseDto;
 import com.joseagim.traintracker.entity.Station;
 import com.joseagim.traintracker.exception.ResourceNotFoundException;
 import com.joseagim.traintracker.repository.StationRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StationService {
@@ -38,11 +37,10 @@ public class StationService {
         return StationResponseDto.from(station);
     }
 
-    public List<StationResponseDto> findAll() {
+    public Page<StationResponseDto> findAll(Pageable pageable) {
 
-        return stationRepository.findAll().stream()
-                .map(StationResponseDto::from)
-                .collect(Collectors.toList());
+        return stationRepository.findAll(pageable).map(StationResponseDto::from);
+
     }
 
     public StationResponseDto update(Long id, StationRequestDto stationRequest) {

@@ -9,10 +9,9 @@ import com.joseagim.traintracker.exception.ResourceNotFoundException;
 import com.joseagim.traintracker.repository.RouteRepository;
 import com.joseagim.traintracker.repository.TrainRepository;
 import com.joseagim.traintracker.repository.TripRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TripService {
@@ -61,10 +60,8 @@ public class TripService {
         return TripResponseDto.from(trip);
     }
 
-    public List<TripResponseDto> findAll() {
-        return tripRepository.findAll().stream()
-                .map(TripResponseDto::from)
-                .collect(Collectors.toList());
+    public Page<TripResponseDto> findAll(Pageable pageable) {
+        return tripRepository.findAll(pageable).map(TripResponseDto::from);
     }
 
     public TripResponseDto update(Long id, TripRequestDto tripRequest) {
