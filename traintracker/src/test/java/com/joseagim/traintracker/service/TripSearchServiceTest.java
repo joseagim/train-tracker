@@ -3,8 +3,6 @@ package com.joseagim.traintracker.service;
 import com.joseagim.traintracker.entity.Route;
 import com.joseagim.traintracker.entity.RouteStation;
 import com.joseagim.traintracker.entity.Station;
-import com.joseagim.traintracker.repository.RouteRepository;
-import com.joseagim.traintracker.repository.TrainRepository;
 import com.joseagim.traintracker.repository.TripRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,19 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public class TripServiceTest {
+public class TripSearchServiceTest {
 
     @InjectMocks
-    private TripService tripService;
+    private TripSearchService tripSearchService;
 
     @Mock
     private TripRepository tripRepository;
-
-    @Mock
-    private RouteRepository routeRepository;
-
-    @Mock
-    private TrainRepository trainRepository;
 
     @Test
     void isValidRouteOrder_valid_fromBeforeTo() {
@@ -69,7 +61,7 @@ public class TripServiceTest {
         rs3.setMinutesFromStart(10);
         r.addRouteStation(rs3);
 
-        boolean result = tripService.isValidRouteOrder(r, s1.getId(), s3.getId());
+        boolean result = tripSearchService.isValidRouteOrder(r, s1.getId(), s3.getId());
 
         assertTrue(result);
 
@@ -114,7 +106,7 @@ public class TripServiceTest {
         rs3.setMinutesFromStart(10);
         r.addRouteStation(rs3);
 
-        boolean result = tripService.isValidRouteOrder(r, s3.getId(), s1.getId());
+        boolean result = tripSearchService.isValidRouteOrder(r, s3.getId(), s1.getId());
 
         assertFalse(result);
 
@@ -164,7 +156,7 @@ public class TripServiceTest {
         rs3.setMinutesFromStart(10);
         r.addRouteStation(rs3);
 
-        boolean result = tripService.isValidRouteOrder(r, s4.getId(), s3.getId());
+        boolean result = tripSearchService.isValidRouteOrder(r, s4.getId(), s3.getId());
 
         assertFalse(result);
     }
@@ -213,7 +205,7 @@ public class TripServiceTest {
         rs3.setMinutesFromStart(10);
         r.addRouteStation(rs3);
 
-        boolean result = tripService.isValidRouteOrder(r, s1.getId(), s4.getId());
+        boolean result = tripSearchService.isValidRouteOrder(r, s1.getId(), s4.getId());
 
         assertFalse(result);
     }
@@ -267,7 +259,7 @@ public class TripServiceTest {
         rs3.setMinutesFromStart(10);
         r.addRouteStation(rs3);
 
-        boolean result = tripService.isValidRouteOrder(r, s4.getId(), s5.getId());
+        boolean result = tripSearchService.isValidRouteOrder(r, s4.getId(), s5.getId());
 
         assertFalse(result);
     }
@@ -280,7 +272,7 @@ public class TripServiceTest {
         String seats = "10010111";
         int passengers = 3;
 
-        boolean result = tripService.hasEnoughSeats(seats, passengers);
+        boolean result = tripSearchService.hasEnoughSeats(seats, passengers);
 
         assertTrue(result);
 
@@ -292,7 +284,7 @@ public class TripServiceTest {
         String seats = "01010011";
         int passengers = 4;
 
-        boolean result = tripService.hasEnoughSeats(seats, passengers);
+        boolean result = tripSearchService.hasEnoughSeats(seats, passengers);
 
         assertTrue(result);
 
@@ -304,7 +296,7 @@ public class TripServiceTest {
         String seats = "10011";
         int passengers = 4;
 
-        boolean result = tripService.hasEnoughSeats(seats, passengers);
+        boolean result = tripSearchService.hasEnoughSeats(seats, passengers);
 
         assertFalse(result);
 
@@ -316,7 +308,7 @@ public class TripServiceTest {
         String seats = "10";
         int passengers = 4;
 
-        boolean result = tripService.hasEnoughSeats(seats, passengers);
+        boolean result = tripSearchService.hasEnoughSeats(seats, passengers);
 
         assertFalse(result);
 
