@@ -3,6 +3,7 @@ package com.joseagim.traintracker.service;
 import com.joseagim.traintracker.entity.Route;
 import com.joseagim.traintracker.entity.RouteStation;
 import com.joseagim.traintracker.entity.Station;
+import com.joseagim.traintracker.entity.Trip;
 import com.joseagim.traintracker.repository.TripRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TripSearchServiceTest {
@@ -21,6 +27,130 @@ public class TripSearchServiceTest {
 
     @Mock
     private TripRepository tripRepository;
+
+
+
+    // ==================== findValidTrips ====================
+
+    @Test
+    void findValidTrips_filtersOutInvalidTrip_whenListHasValidAndInvalid() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setId(1L);
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setId(2L);
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(20);
+
+        Route r1 = new Route();
+        r1.setName("r1");
+        r1.addRouteStation(rs1);
+        r1.addRouteStation(rs2);
+
+        Trip t1 = new Trip();
+        t1.setId(1L);
+        t1.setRoute(r1);
+        t1.setSeats("01001");
+        t1.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 0));
+
+        Trip t2 = new Trip();
+        t2.setId(2L);
+        t2.setRoute(r1);
+        t2.setSeats("01111");
+        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 9, 0));
+
+        when(tripRepository.findByDepartureTimeBetween(any(),any()))
+                .thenReturn(List.of(t1, t2));
+
+        List<Trip> result = tripSearchService.findValidTrips(
+                1L, 2L, LocalDate.of(2026, 7, 31), 4);
+
+        assertEquals(List.of(t2), result);
+
+    }
+
+    @Test
+    void findValidTrips_returnsSortedByDepartureTime() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setId(1L);
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setId(2L);
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(20);
+
+        Route r1 = new Route();
+        r1.setName("r1");
+        r1.addRouteStation(rs1);
+        r1.addRouteStation(rs2);
+
+        Trip t1 = new Trip();
+        t1.setId(1L);
+        t1.setRoute(r1);
+        t1.setSeats("1111");
+        t1.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 1));
+
+        Trip t2 = new Trip();
+        t2.setId(2L);
+        t2.setRoute(r1);
+        t2.setSeats("1111");
+        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 0));
+
+        when(tripRepository.findByDepartureTimeBetween(any(), any()))
+                .thenReturn(List.of(t1, t2));
+
+        List<Trip> result = tripSearchService.findValidTrips(
+                1L, 2L, LocalDate.of(2026, 7, 31), 2);
+
+        assertEquals(List.of(t2, t1), result);
+
+    }
+
+    @Test
+    void findValidTrips_returnsEmptyList_whenListHasNoTrips() {
+
+        when(tripRepository.findByDepartureTimeBetween(any(), any()))
+                .thenReturn(List.of());
+
+        List<Trip> result = tripSearchService.findValidTrips(
+                1L, 2L, LocalDate.of(2026, 7, 31), 2);
+
+        assertEquals(List.of(), result);
+
+    }
+
+
+    // ==================== isValidRouteOrder ====================
 
     @Test
     void isValidRouteOrder_valid_fromBeforeTo() {
@@ -264,7 +394,7 @@ public class TripSearchServiceTest {
         assertFalse(result);
     }
 
-
+    // ==================== hasEnoughSeats ====================
 
     @Test
     void hasEnoughSeats_valid_moreFreeSeatsThanPassengers() {
