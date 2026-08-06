@@ -14,5 +14,9 @@ spring:
       hibernate:
         format_sql: true
 
+jwt:
+  key: "Opf43RpRrQ4+w6CIQAZqJNRL6JnY56O9OlJ9Nx9DsY8="
+  expiration-minutes: 60
+
 server:
   port: 8080
