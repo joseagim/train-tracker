@@ -27,6 +27,17 @@ public class GlobalExceptionHandler {
                         request.getMethod()));
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateResource(DuplicateResourceException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDto(
+                        e.getMessage(),
+                        HttpStatus.CONFLICT.value(),
+                        LocalDateTime.now(),
+                        request.getRequestURI(),
+                        request.getMethod()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleBeanValidationError(MethodArgumentNotValidException e, HttpServletRequest request) {
 
