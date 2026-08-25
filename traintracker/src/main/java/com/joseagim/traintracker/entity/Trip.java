@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -29,10 +27,6 @@ public class Trip {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Train train;
 
-    @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "trip")
-    private List<Incident> incidents = new ArrayList<>();
-
     @NotNull
     @Column(nullable = false)
     private LocalDateTime departureTime;
@@ -48,10 +42,5 @@ public class Trip {
 
     @Version
     private Long version;
-
-    public void addIncident(Incident i) {
-        i.setTrip(this);
-        incidents.add(i);
-    }
 
 }
