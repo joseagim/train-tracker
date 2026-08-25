@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,17 @@ public class GlobalExceptionHandler {
                 new ErrorResponseDto(
                         e.getMessage(),
                         HttpStatus.CONFLICT.value(),
+                        LocalDateTime.now(),
+                        request.getRequestURI(),
+                        request.getMethod()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ErrorResponseDto(
+                        e.getMessage(),
+                        HttpStatus.UNAUTHORIZED.value(),
                         LocalDateTime.now(),
                         request.getRequestURI(),
                         request.getMethod()));
