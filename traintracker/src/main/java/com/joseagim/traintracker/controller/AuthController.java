@@ -1,6 +1,8 @@
 package com.joseagim.traintracker.controller;
 
+import com.joseagim.traintracker.dto.request.LoginRequestDto;
 import com.joseagim.traintracker.dto.request.RegisterRequestDto;
+import com.joseagim.traintracker.dto.response.LoginResponseDto;
 import com.joseagim.traintracker.dto.response.RegisterResponseDto;
 import com.joseagim.traintracker.security.AuthService;
 import jakarta.validation.Valid;
@@ -23,6 +25,14 @@ public class AuthController {
             @Valid @RequestBody RegisterRequestDto registerRequest) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(registerRequest));
+
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(
+            @Valid @RequestBody LoginRequestDto loginRequest) {
+
+        return ResponseEntity.ok(authService.login(loginRequest));
 
     }
 
