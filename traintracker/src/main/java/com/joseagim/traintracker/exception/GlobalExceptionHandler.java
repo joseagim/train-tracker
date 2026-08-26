@@ -3,6 +3,7 @@ package com.joseagim.traintracker.exception;
 import com.joseagim.traintracker.dto.response.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,6 +46,28 @@ public class GlobalExceptionHandler {
                 new ErrorResponseDto(
                         e.getMessage(),
                         HttpStatus.UNAUTHORIZED.value(),
+                        LocalDateTime.now(),
+                        request.getRequestURI(),
+                        request.getMethod()));
+    }
+
+    @ExceptionHandler(NoSeatsAvailableException.class)
+    public ResponseEntity<ErrorResponseDto> handleNoSeatsAvailable(NoSeatsAvailableException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDto(
+                        e.getMessage(),
+                        HttpStatus.CONFLICT.value(),
+                        LocalDateTime.now(),
+                        request.getRequestURI(),
+                        request.getMethod()));
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponseDto> handleOptimisticLock(HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDto(
+                        "Seat is no longer available, try again",
+                        HttpStatus.CONFLICT.value(),
                         LocalDateTime.now(),
                         request.getRequestURI(),
                         request.getMethod()));

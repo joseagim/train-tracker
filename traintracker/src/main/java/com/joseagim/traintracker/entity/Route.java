@@ -35,4 +35,20 @@ public class Route {
         routeStations.add(rs);
     }
 
+    public int minutesBetween(Long originStationId, Long destinationStationId) {
+        int originMinutes = -1;
+        int destinationMinutes = -1;
+
+        for (RouteStation rs : routeStations) {
+            if (rs.getStation().getId().equals(originStationId)) {
+                originMinutes = rs.getMinutesFromStart();
+            }
+            if (rs.getStation().getId().equals(destinationStationId)) {
+                destinationMinutes = rs.getMinutesFromStart();
+            }
+        }
+
+        return destinationMinutes - originMinutes;
+    }
+
 }
