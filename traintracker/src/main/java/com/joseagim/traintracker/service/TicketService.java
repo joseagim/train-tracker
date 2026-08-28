@@ -14,6 +14,9 @@ import com.joseagim.traintracker.repository.TripRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class TicketService {
 
@@ -28,6 +31,14 @@ public class TicketService {
         this.ticketRepository = ticketRepository;
         this.tripRepository = tripRepository;
         this.stationRepository = stationRepository;
+    }
+
+    public List<TicketResponseDto> findByUser(User user) {
+
+        return ticketRepository.findByUser(user).stream()
+                .map(TicketResponseDto::from)
+                .collect(Collectors.toList());
+
     }
 
     @Transactional
