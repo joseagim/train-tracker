@@ -11,5 +11,19 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  backend:
+    build: .
+    container_name: traintracker-backend
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/traintracker
+      SPRING_DATASOURCE_USERNAME: traintracker_user
+      SPRING_DATASOURCE_PASSWORD: traintracker_pass
+      JWT_KEY: ${JWT_KEY}
+      JWT_EXPIRATION_MINUTES: 60
+
 volumes:
   postgres_data:

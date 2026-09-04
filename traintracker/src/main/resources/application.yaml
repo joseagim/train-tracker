@@ -2,9 +2,9 @@ spring:
   application:
     name: traintracker
   datasource:
-    url: jdbc:postgresql://localhost:5433/traintracker
-    username: traintracker_user
-    password: traintracker_pass
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/traintracker}
+    username: ${SPRING_DATASOURCE_USERNAME:traintracker_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:traintracker_pass}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -15,8 +15,8 @@ spring:
         format_sql: true
 
 jwt:
-  key: "Opf43RpRrQ4+w6CIQAZqJNRL6JnY56O9OlJ9Nx9DsY8="
-  expiration-minutes: 60
+  key: ${JWT_KEY:Opf43RpRrQ4+w6CIQAZqJNRL6JnY56O9OlJ9Nx9DsY8=}
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
 
 server:
   port: 8080
