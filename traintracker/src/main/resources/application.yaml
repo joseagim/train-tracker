@@ -19,4 +19,4 @@ jwt:
   expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
 
 server:
-  port: 8080
+  port: ${PORT:8080}
