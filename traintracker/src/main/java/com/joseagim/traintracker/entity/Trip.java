@@ -46,7 +46,7 @@ public class Trip {
     private Long version;
 
     public double getPrice(Long originId, Long destinationId) {
-        double baseFare = route.minutesBetween(originId, destinationId) * 0.15;
+        double baseFare = route.minutesBetween(originId, destinationId) * 0.20;
         double timeFactor = getTimeFactor(departureTime.toLocalTime());
         double dayFactor = getDayFactor(departureTime.getDayOfWeek());
         return baseFare * timeFactor * dayFactor;
@@ -54,15 +54,16 @@ public class Trip {
 
     private double getTimeFactor(LocalTime time) {
         int hour = time.getHour();
-        if (hour >= 6 && hour < 9) return 0.85;
-        if (hour >= 9 && hour < 21) return 1.15;
+        if (hour >= 6 && hour < 9) return 0.8;
+        if (hour >= 9 && hour < 15) return 1.1;
+        if (hour >= 15 && hour < 20) return 1.2;
         return 1.0;
     }
 
     private double getDayFactor(DayOfWeek day) {
         return switch (day) {
-            case SATURDAY, SUNDAY -> 1.2;
-            case FRIDAY -> 1.1;
+            case SATURDAY, SUNDAY -> 1.50;
+            case FRIDAY -> 1.25;
             default -> 1.0;
         };
     }
