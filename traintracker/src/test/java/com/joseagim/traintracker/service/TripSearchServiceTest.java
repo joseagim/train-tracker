@@ -97,6 +97,11 @@ public class TripSearchServiceTest {
         s2.setName("s2");
         s2.setCity("c2");
 
+        Station s3 = new Station();
+        s3.setId(3L);
+        s3.setName("s3");
+        s3.setCity("c3");
+
         RouteStation rs1 = new RouteStation();
         rs1.setId(1L);
         rs1.setStation(s1);
@@ -107,30 +112,54 @@ public class TripSearchServiceTest {
         rs2.setId(2L);
         rs2.setStation(s2);
         rs2.setStopOrder(2);
-        rs2.setMinutesFromStart(20);
+        rs2.setMinutesFromStart(60);
+
+        RouteStation rs3 = new RouteStation();
+        rs3.setId(3L);
+        rs3.setStation(s3);
+        rs3.setStopOrder(3);
+        rs3.setMinutesFromStart(100);
+
+        RouteStation rs4 = new RouteStation();
+        rs4.setId(4L);
+        rs4.setStation(s2);
+        rs4.setStopOrder(1);
+        rs4.setMinutesFromStart(0);
+
+        RouteStation rs5 = new RouteStation();
+        rs5.setId(5L);
+        rs5.setStation(s3);
+        rs5.setStopOrder(2);
+        rs5.setMinutesFromStart(40);
 
         Route r1 = new Route();
         r1.setName("r1");
         r1.addRouteStation(rs1);
         r1.addRouteStation(rs2);
+        r1.addRouteStation(rs3);
+
+        Route r2 = new Route();
+        r2.setName("r2");
+        r2.addRouteStation(rs4);
+        r2.addRouteStation(rs5);
 
         Trip t1 = new Trip();
         t1.setId(1L);
         t1.setRoute(r1);
         t1.setSeats("1111");
-        t1.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 1));
+        t1.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 30));
 
         Trip t2 = new Trip();
         t2.setId(2L);
-        t2.setRoute(r1);
+        t2.setRoute(r2);
         t2.setSeats("1111");
-        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 14, 0));
+        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 15, 0));
 
         when(tripRepository.findByDepartureTimeBetween(any(), any()))
                 .thenReturn(List.of(t1, t2));
 
         List<Trip> result = tripSearchService.findValidTrips(
-                1L, 2L, LocalDate.of(2026, 7, 31), 2);
+                2L, 3L, LocalDate.of(2026, 7, 31), 2);
 
         assertEquals(List.of(t2, t1), result);
 

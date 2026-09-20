@@ -51,4 +51,13 @@ public class Route {
         return destinationMinutes - originMinutes;
     }
 
+    public int minutesFromStartTo(Long stationId) {
+        for (RouteStation rs : routeStations) {
+            if (rs.getStation().getId().equals(stationId)) {
+                return rs.getMinutesFromStart();
+            }
+        }
+        throw new IllegalArgumentException("Station not found in route: " + stationId);
+    }
+
 }

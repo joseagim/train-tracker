@@ -34,7 +34,9 @@ public class TripSearchService {
 
         return tripsOnDate.stream()
                 .filter(trip -> isValid(trip, from, to, passengers))
-                .sorted(Comparator.comparing(Trip::getDepartureTime))
+                .sorted(Comparator.comparing(trip ->
+                        trip.getDepartureTime().plusMinutes(trip.getRoute().minutesFromStartTo(from))
+                ))
                 .collect(Collectors.toList());
 
     }
