@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -42,5 +44,27 @@ public class Trip {
 
     @Version
     private Long version;
+
+    public double getPrice(Long originId, Long destinationId) {
+        double baseFare = route.minutesBetween(originId, destinationId) * 0.15;
+        double timeFactor = getTimeFactor(departureTime.toLocalTime());
+        double dayFactor = getDayFactor(departureTime.getDayOfWeek());
+        return baseFare * timeFactor * dayFactor;
+    }
+
+    private double getTimeFactor(LocalTime time) {
+        int hour = time.getHour();
+        if (hour >= 6 && hour < 9) return 0.85;
+        if (hour >= 9 && hour < 21) return 1.15;
+        return 1.0;
+    }
+
+    private double getDayFactor(DayOfWeek day) {
+        return switch (day) {
+            case SATURDAY, SUNDAY -> 1.2;
+            case FRIDAY -> 1.1;
+            default -> 1.0;
+        };
+    }
 
 }

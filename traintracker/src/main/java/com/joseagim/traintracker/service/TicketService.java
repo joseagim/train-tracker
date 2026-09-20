@@ -76,7 +76,7 @@ public class TicketService {
         ticket.setDestination(destination);
         ticket.setBogey(seatIndex / trip.getTrain().getSeatsByBogey() + 1);
         ticket.setSeat(seatIndex % trip.getTrain().getSeatsByBogey() + 1);
-        ticket.setPrice(trip.getRoute().minutesBetween(origin.getId(), destination.getId()) * 0.15);
+        ticket.setPrice(trip.getPrice(origin.getId(), destination.getId()));
 
         Ticket saved = ticketRepository.save(ticket);
 
