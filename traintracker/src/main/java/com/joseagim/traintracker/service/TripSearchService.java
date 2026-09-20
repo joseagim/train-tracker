@@ -23,7 +23,7 @@ public class TripSearchService {
 
     public List<TripSearchResponseDto> searchTrips(Long from, Long to, LocalDate date, int passengers) {
         return findValidTrips(from, to, date, passengers).stream()
-                .map(TripSearchResponseDto::from)
+                .map((trip) -> TripSearchResponseDto.from(trip, from, to))
                 .collect(Collectors.toList());
     }
 
