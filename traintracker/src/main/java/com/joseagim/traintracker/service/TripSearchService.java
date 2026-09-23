@@ -7,7 +7,9 @@ import com.joseagim.traintracker.entity.Trip;
 import com.joseagim.traintracker.repository.TripRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +19,11 @@ public class TripSearchService {
 
     private final TripRepository tripRepository;
 
-    public TripSearchService(TripRepository tripRepository) {
+    private final Clock clock;
+
+    public TripSearchService(TripRepository tripRepository, Clock clock) {
         this.tripRepository = tripRepository;
+        this.clock = clock;
     }
 
     public List<TripSearchResponseDto> searchTrips(Long from, Long to, LocalDate date, int passengers) {
@@ -42,7 +47,15 @@ public class TripSearchService {
     }
 
     boolean isValid(Trip trip, Long from, Long to, int passengers) {
-        return isValidRouteOrder(trip.getRoute(), from, to) && hasEnoughSeats(trip.getSeats(), passengers);
+        return isValidRouteOrder(trip.getRoute(), from, to) &&
+                hasEnoughSeats(trip.getSeats(), passengers) &&
+                hasNotDeparted(trip, from);
+    }
+
+    boolean hasNotDeparted(Trip trip, Long from) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        return trip.getDepartureTime().plusMinutes(trip.getRoute().minutesFromStartTo(from))
+                .isAfter(now);
     }
 
     boolean isValidRouteOrder(Route route, Long from, Long to) {

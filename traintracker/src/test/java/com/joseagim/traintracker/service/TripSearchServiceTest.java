@@ -5,14 +5,16 @@ import com.joseagim.traintracker.entity.RouteStation;
 import com.joseagim.traintracker.entity.Station;
 import com.joseagim.traintracker.entity.Trip;
 import com.joseagim.traintracker.repository.TripRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,13 +24,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class TripSearchServiceTest {
 
-    @InjectMocks
     private TripSearchService tripSearchService;
 
     @Mock
     private TripRepository tripRepository;
 
-
+    @BeforeEach
+    void setUp() {
+        Clock fixedClock = Clock.fixed(
+                LocalDateTime.of(2026, 7, 31, 10, 0)
+                        .atZone(ZoneId.of("Europe/Madrid")).toInstant(),
+                ZoneId.of("Europe/Madrid")
+        );
+        tripSearchService = new TripSearchService(tripRepository, fixedClock);
+    }
 
     // ==================== findValidTrips ====================
 
@@ -72,7 +81,7 @@ public class TripSearchServiceTest {
         t2.setId(2L);
         t2.setRoute(r1);
         t2.setSeats("01111");
-        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 9, 0));
+        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 11, 0));
 
         when(tripRepository.findByDepartureTimeBetween(any(),any()))
                 .thenReturn(List.of(t1, t2));
@@ -162,6 +171,58 @@ public class TripSearchServiceTest {
                 2L, 3L, LocalDate.of(2026, 7, 31), 2);
 
         assertEquals(List.of(t2, t1), result);
+
+    }
+
+    @Test
+    void findValidTrips_excludesTrip_whenDepartureTimeIsInThePast() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setId(1L);
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setId(2L);
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(20);
+
+        Route r1 = new Route();
+        r1.setName("r1");
+        r1.addRouteStation(rs1);
+        r1.addRouteStation(rs2);
+
+        Trip t1 = new Trip();
+        t1.setId(1L);
+        t1.setRoute(r1);
+        t1.setSeats("01111");
+        t1.setDepartureTime(LocalDateTime.of(2026, 7, 31, 8, 0));
+
+        Trip t2 = new Trip();
+        t2.setId(2L);
+        t2.setRoute(r1);
+        t2.setSeats("01111");
+        t2.setDepartureTime(LocalDateTime.of(2026, 7, 31, 12, 0));
+
+        when(tripRepository.findByDepartureTimeBetween(any(),any()))
+                .thenReturn(List.of(t1, t2));
+
+        List<Trip> result = tripSearchService.findValidTrips(
+                1L, 2L, LocalDate.of(2026, 7, 31), 4);
+
+        assertEquals(List.of(t2), result);
 
     }
 
@@ -473,6 +534,141 @@ public class TripSearchServiceTest {
 
     }
 
+    // ==================== hasNotDeparted ====================
 
+    @Test
+    void hasNotDeparted_valid_originIsFirstStopAndAfterNow() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(60);
+
+        Route route = new Route();
+        route.setName("route");
+        route.addRouteStation(rs1);
+        route.addRouteStation(rs2);
+
+        Trip trip = new Trip();
+        trip.setRoute(route);
+        trip.setDepartureTime(LocalDateTime.of(2026, 7, 31, 12, 0));
+
+        boolean result = tripSearchService.hasNotDeparted(trip, s1.getId());
+
+        assertTrue(result);
+
+    }
+
+    @Test
+    void hasNotDeparted_valid_originIsIntermediateAndAfterNow() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        Station s3 = new Station();
+        s3.setId(3L);
+        s3.setName("s3");
+        s3.setCity("c3");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(60);
+
+        RouteStation rs3 = new RouteStation();
+        rs3.setStation(s3);
+        rs3.setStopOrder(3);
+        rs3.setMinutesFromStart(100);
+
+        Route route = new Route();
+        route.setName("route");
+        route.addRouteStation(rs1);
+        route.addRouteStation(rs2);
+        route.addRouteStation(rs3);
+
+        Trip trip = new Trip();
+        trip.setRoute(route);
+        trip.setDepartureTime(LocalDateTime.of(2026, 7, 31, 9, 30));
+
+        boolean result = tripSearchService.hasNotDeparted(trip, s2.getId());
+
+        assertTrue(result);
+
+    }
+
+    @Test
+    void hasNotDeparted_notValid_originIsIntermediateAndBeforeNow() {
+
+        Station s1 = new Station();
+        s1.setId(1L);
+        s1.setName("s1");
+        s1.setCity("c1");
+
+        Station s2 = new Station();
+        s2.setId(2L);
+        s2.setName("s2");
+        s2.setCity("c2");
+
+        Station s3 = new Station();
+        s3.setId(3L);
+        s3.setName("s3");
+        s3.setCity("c3");
+
+        RouteStation rs1 = new RouteStation();
+        rs1.setStation(s1);
+        rs1.setStopOrder(1);
+        rs1.setMinutesFromStart(0);
+
+        RouteStation rs2 = new RouteStation();
+        rs2.setStation(s2);
+        rs2.setStopOrder(2);
+        rs2.setMinutesFromStart(60);
+
+        RouteStation rs3 = new RouteStation();
+        rs3.setStation(s3);
+        rs3.setStopOrder(3);
+        rs3.setMinutesFromStart(100);
+
+        Route route = new Route();
+        route.setName("route");
+        route.addRouteStation(rs1);
+        route.addRouteStation(rs2);
+        route.addRouteStation(rs3);
+
+        Trip trip = new Trip();
+        trip.setRoute(route);
+        trip.setDepartureTime(LocalDateTime.of(2026, 7, 31, 8, 0));
+
+        boolean result = tripSearchService.hasNotDeparted(trip, s2.getId());
+
+        assertFalse(result);
+    }
 
 }
