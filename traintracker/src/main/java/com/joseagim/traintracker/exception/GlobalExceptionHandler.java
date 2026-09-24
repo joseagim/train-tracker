@@ -62,6 +62,17 @@ public class GlobalExceptionHandler {
                         request.getMethod()));
     }
 
+    @ExceptionHandler(TicketAlreadyScannedException.class)
+    public ResponseEntity<ErrorResponseDto> ticketAlreadyScanned(TicketAlreadyScannedException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponseDto(
+                        e.getMessage(),
+                        HttpStatus.CONFLICT.value(),
+                        LocalDateTime.now(),
+                        request.getRequestURI(),
+                        request.getMethod()));
+    }
+
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ErrorResponseDto> handleOptimisticLock(HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(

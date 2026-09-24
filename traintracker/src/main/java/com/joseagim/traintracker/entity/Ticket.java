@@ -46,6 +46,9 @@ public class Ticket {
     @Positive
     private double price;
 
+    @Column(nullable = false)
+    private boolean scanned = false;
+
     @PrePersist
     public void prePersist() {
         uuid = UUID.randomUUID().toString();

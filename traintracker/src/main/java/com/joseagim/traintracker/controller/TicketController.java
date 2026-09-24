@@ -2,6 +2,7 @@ package com.joseagim.traintracker.controller;
 
 import com.joseagim.traintracker.dto.request.TicketRequestDto;
 import com.joseagim.traintracker.dto.response.TicketResponseDto;
+import com.joseagim.traintracker.dto.response.TicketValidationResponseDto;
 import com.joseagim.traintracker.entity.User;
 import com.joseagim.traintracker.service.TicketService;
 import jakarta.validation.Valid;
@@ -27,6 +28,22 @@ public class TicketController {
             @AuthenticationPrincipal User user) {
 
         return ResponseEntity.ok(ticketService.findByUser(user));
+
+    }
+
+    @GetMapping("/validate/{uuid}")
+    public ResponseEntity<TicketValidationResponseDto> validate(
+            @PathVariable String uuid) {
+
+        return ResponseEntity.ok(ticketService.validate(uuid));
+
+    }
+
+    @PostMapping("/scan/{uuid}")
+    public ResponseEntity<TicketValidationResponseDto> scan(
+            @PathVariable String uuid) {
+
+        return ResponseEntity.ok(ticketService.scan(uuid));
 
     }
 

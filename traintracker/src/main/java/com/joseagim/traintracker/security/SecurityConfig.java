@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/trips/search").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stations/**").permitAll()
+                        .requestMatchers("/api/tickets/validate/**", "/api/tickets/scan/**").hasRole("ADMIN")
                         .requestMatchers("/api/stations/**", "/api/trains/**", "/api/routes/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

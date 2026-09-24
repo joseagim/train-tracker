@@ -2,12 +2,14 @@ package com.joseagim.traintracker.service;
 
 import com.joseagim.traintracker.dto.request.TicketRequestDto;
 import com.joseagim.traintracker.dto.response.TicketResponseDto;
+import com.joseagim.traintracker.dto.response.TicketValidationResponseDto;
 import com.joseagim.traintracker.entity.Station;
 import com.joseagim.traintracker.entity.Ticket;
 import com.joseagim.traintracker.entity.Trip;
 import com.joseagim.traintracker.entity.User;
 import com.joseagim.traintracker.exception.NoSeatsAvailableException;
 import com.joseagim.traintracker.exception.ResourceNotFoundException;
+import com.joseagim.traintracker.exception.TicketAlreadyScannedException;
 import com.joseagim.traintracker.repository.StationRepository;
 import com.joseagim.traintracker.repository.TicketRepository;
 import com.joseagim.traintracker.repository.TripRepository;
@@ -38,6 +40,28 @@ public class TicketService {
         return ticketRepository.findByUser(user).stream()
                 .map(TicketResponseDto::from)
                 .collect(Collectors.toList());
+
+    }
+
+    public TicketValidationResponseDto validate(String uuid) {
+
+        Ticket ticket = ticketRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        return TicketValidationResponseDto.from(ticket);
+
+    }
+
+    @Transactional
+    public TicketValidationResponseDto scan(String uuid) {
+
+        Ticket ticket = ticketRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        if (ticket.isScanned()) {
+            throw new TicketAlreadyScannedException("Ticket already scanned");
+        }
+        ticket.setScanned(true);
+        Ticket saved = ticketRepository.save(ticket);
+        return TicketValidationResponseDto.from(saved);
 
     }
 
